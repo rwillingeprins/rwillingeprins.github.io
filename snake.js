@@ -1,11 +1,9 @@
+const scoreSpan = document.getElementById('score');
+const canvas = document.getElementById('canvas');
 const nRows = 18;
 const nCols = 18;
-const cellWidth = 32;
-const cellHeight = 32;
-const canvas = document.createElement('canvas');
-document.body.appendChild(canvas);
-canvas.width = cellWidth * nCols;
-canvas.height = cellHeight * nRows;
+const cellWidth = canvas.width / nCols;
+const cellHeight = canvas.height / nRows;
 const ctx = canvas.getContext('2d');
 let pressedKey = null;
 const directionPerKey = {'ArrowUp': 'up', 'ArrowLeft': 'left', 'ArrowDown': 'down', 'ArrowRight': 'right'};
@@ -36,6 +34,7 @@ const getRandomFreeCell = () => {
 }
 const foodCellSet = new Set([getRandomFreeCell()]);
 const render = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     [
         {color: 'green', cells: grassCells},
         {color: 'blue', cells: waterCellSet},
@@ -44,7 +43,7 @@ const render = () => {
     ].forEach(({color, cells}) => {
         ctx.beginPath();
         ctx.fillStyle = color;
-        ctx.strokeStyle = 'white';
+        ctx.strokeStyle = 'black';
         cells.forEach(([row, col]) => {
             ctx.rect(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
         })
@@ -55,6 +54,8 @@ const render = () => {
 }
 let targetFrameRate = 3;
 let nextFrameTimeStamp;
+let score = 0;
+const updateScoreDisplay = () => scoreSpan.textContent = score.toString();
 const step = timeStamp => {
     let continueAnimation = true;
     if (timeStamp >= nextFrameTimeStamp) {
@@ -81,6 +82,8 @@ const step = timeStamp => {
                 foodCellSet.delete(cell);
                 foodCellSet.add(getRandomFreeCell());
                 targetFrameRate += 0.25;
+                score++;
+                updateScoreDisplay();
             } else {
                 snake.cells.pop();
             }
@@ -93,7 +96,11 @@ const step = timeStamp => {
         requestAnimationFrame(step);
     }
 }
-document.body.addEventListener('keydown', e => pressedKey = e.key);
+updateScoreDisplay();
+document.body.addEventListener('keydown', e => {
+    e.preventDefault();
+    pressedKey = e.key
+});
 render();
 nextFrameTimeStamp = performance.now() + (1000 / targetFrameRate);
 requestAnimationFrame(step);

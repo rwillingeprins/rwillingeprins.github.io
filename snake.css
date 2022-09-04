@@ -1,0 +1,20 @@
+body {
+    font: xxx-large 'VT323', monospace;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    color: white;
+    background-color: black;
+}
+
+#game {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#interface {
+    padding: 10px;
+}
